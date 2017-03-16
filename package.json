@@ -1,0 +1,15 @@
+{
+  "name": "tust",
+  "version": "1.0.0",
+  "description": "A quick tust",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Pash",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.2",
+    "socket.io": "^1.7.3"
+  }
+}
