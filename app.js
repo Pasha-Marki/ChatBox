@@ -20,7 +20,7 @@ io.on('connection', function(socket){
       socket.emit('Login', 'Hash is: ' + this.responseText)
     };
     xmlhttp.open("POST", "login.php", true);
-    xmlhttp.send("info = "+myObj);
+    xmlhttp.send("info = " + data);
 
 
 
