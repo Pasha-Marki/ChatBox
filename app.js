@@ -4,10 +4,10 @@ var io = require('socket.io')(http);
 var path = require('path');
 
 app.get('/', function(req, res){
-  var use = $_GET["user"];
-  if(use!=""){
+  //var use = $_GET["user"];
+  //if(use!=""){
 
-  }
+  //}
   res.sendFile(path.join(__dirname,'/index.html'));
 });
 users = [];
