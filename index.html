@@ -1,43 +1,124 @@
 <!DOCTYPE html>
 <html>
     <head><title>Hello world</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+      <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+      <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+      <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
       <script src="/socket.io/socket.io.js"></script>
       <script>
         var socket = io();
-          function setUsername(){
-            socket.emit('setUsername', {username: document.getElementById('name').value, password: document.getElementById('psw')});
-          };
+
+          function setUser(){
+            var em = "";
+            em=$("#email");
+            if($("#signUpName").val()!="" && $("#signUpPassword").val()!="" && $("#signUpPassword").val()==$("#checkPassword").val()){
+            var u= $("#signUpName").val();
+            var ps=$("#signUpPassword").val();
+            socket.emit('signUp', {username: u, password: ps, email: em});
+
+          }
+        }
+
+          function getUser(){
+            if($("#name").val()!="" && $("#psw").val()!="")
+              socket.emit('getUser', {username: $("#name").val(), password: $("#psw").val()});
+          }
           var user;
-          socket.on('userExists', function(data){
-              document.getElementById('error-container').innerHTML = data;
-          });
+
           socket.on('userSet', function(data){
+              $("#signUpName").val("");
+              $("#signUpPassword").val("");
+              $("#checkPassword").val("");
+              $("#name").val("");
+              $("#psw").val("");
               user = data.username;
-              document.body.innerHTML = '<input type="text" id="message">\
-              <button type="button" name="button" onclick="sendMessage()">Send</button>\
-              <div id="message-container"></div>';
+              if(user)
+              window.location.hash="#msgPage";
+              else {
+                alert("You need a username");
+              }
           });
           function sendMessage(){
               var msg = document.getElementById('message').value;
-              if(msg){
-                  socket.emit('msg', {message: msg, user: user});
+              if(msg != ''){
+                $("#message").val("");
+                socket.emit('msg', {message: msg, user: user});
+
               }
           }
           socket.on('newmsg', function(data){
               if(user){
-                  document.getElementById('message-container').innerHTML += '<div><b>' + data.user + '</b>: ' + data.message + '</div>'
+                  $("#message-container").append('<div><b>' +data.user + '</b>: ' + data.message + '</div>');
               }
           });
-          socket.on('Login', function(data){
-            document.getElementById('error-container').innerHTML = data;
+          function logout(){
+            user = '';
+            window.location.hash="#loginPage";
+          }
+          socket.on('repeatUser', function(data){
+            alert("Username "+escapeScript(data.username)+" is already taken.");
           });
+          window.onload=function(){
+            if(user==null||user==''){
+              window.location.hash="#loginPage";
+            }
+            $("#message").keyup(function(event){
+              var key = event.which;
+              if(key==13){
+                sendMessage();
+              }
+            });
+
+          };
+
       </script>
     </head>
 
     <body>
-        <div id="error-container"></div>
-        <input id="name" type="text" name="name" value="" placeholder="Enter your name!">
-        <input id="psw" type="password" name="psw" value="" placeholder="Enter your password!">
-        <button type="button" name="button" onclick="setUsername()">Let me chat!</button>
+      <div data-role="page" id="loginPage">
+        <div data-role="content">
+          <div id="error-container"></div>
+          Username:
+          <input id="name" type="text" name="name" value="" placeholder="Enter your username!">
+          Password:
+          <input id="psw" type="password" name="psw" value="" placeholder="Enter your password!">
+          <button type="button" name="button" onclick="getUser()">Let me chat!</button>
+          <button type="button" name="button" onclick="window.location.hash='#signUpPage'">New User Sign up!</button>
+        </div>
+
+      </div>
+      <div data-role="page" id="signUpPage">
+        <div data-role="header">
+          <button type="button" onclick="window.location.hash='#loginPage';">Back</button>
+          <h1>Sign Up</h1>
+        </div>
+        <div data-role="content">
+          Username:
+          <input type="text" id="signUpName" value="" placeholder="Enter a username">
+          Password:
+          <input type="password" value="" id = "signUpPassword" placeholder="Enter a password">
+          Confirm Password:
+          <input type="password" value="" id = "checkPassword" placeholder="Retype your password">
+          <button type="button" onclick="setUser();">Sign Up</button>
+        </div>
+
+      </div>
+      <div data-role="page" id="msgPage">
+        <div data-role="header">
+          <button type="button" onclick="logout();">Logout</button>
+          <h1>ChatBox</h1>
+        </div>
+        <div data-role="content" id="message-container">
+
+        </div>
+        <div data-role="footer" style="display: flex; justify-content: flex-end; align-self: flex-end;">
+          <input type="text" id="message" value="" placeholder="message" style="flex-grow:1;">
+          <button type="button" name="button" onclick="sendMessage()" style="flex-basis: 100px; flex-grow: 0;">Send</button>
+
+
+        </div>
+      </div>
     </body>
 </html>
