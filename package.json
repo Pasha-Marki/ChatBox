@@ -3,13 +3,27 @@
   "version": "1.0.0",
   "description": "A quick tust",
   "main": "index.js",
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node compiled-app.js",
+    "start-dev": "babel-node app.js",
+    "build": "babel app.js --out-file compiled-app.js"
   },
   "author": "Pash",
   "license": "ISC",
   "dependencies": {
+    "assert": "^1.4.1",
+    "babel-polyfill": "^6.26.0",
+    "co": "^4.6.0",
     "express": "^4.15.2",
-    "socket.io": "^1.7.3"
+    "mongodb": "^3.0.3",
+    "socket.io": "^2.0.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
   }
 }
